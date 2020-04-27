@@ -145,6 +145,20 @@ app.all('/bin/:bin', async (req, res) => {
   binData.requests = _.reverse(_.sortBy(_.concat([], binData.requests, formattedRequestData), ['time']));
   await storeBin(`bin_${binData.id}`, binData);
 
+  // Dropbox Response Challenge
+  if (req.query['challenge']) {
+    res.set('Content-Type', 'text/plain');
+    res.set('X-Content-Type-Options', 'nosniff');
+    return res.send(req.query['challenge']);
+  }
+
+  // OneDrive Response Challenge
+  if (req.query['validationToken']) {
+    res.set('Content-Type', 'text/plain');
+    res.set('X-Content-Type-Options', 'nosniff');
+    return res.send(req.query['validationToken']);
+  }
+
   // Facebook Response Challenge
   if (req.query['hub.mode'] === 'subscribe') {
     return res.send(req.query['hub.challenge']);
